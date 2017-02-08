@@ -1,0 +1,35 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/index/index",
+    "pages/index/finished",
+    "pages/ui/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#515151",
+    "navigationBarTitleText": "拉布拉多开发框架",
+    "navigationBarTextStyle": "white",
+    "enablePullDownRefresh": true
+  },
+  "tabBar": {
+    "color": "#888",
+    "selectedColor": "#89bdf7",
+    "backgroundColor": "#fff",
+    "borderStyle": "gray",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "home"
+      },
+      {
+        "pagePath": "pages/index/index",
+        "text": "add"
+      },
+      {
+        "pagePath": "pages/index/finished",
+        "text": "finished"
+      }
+    ]
+  }
+}
