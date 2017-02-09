@@ -1,3 +1,31 @@
+// let request = (wsUrl, reqObj, token) => {
+//   wx.connectSocket({
+//     url: wsUrl,
+//   });
+//   wx.onSocketOpen(function (res) {
+//     console.log('WebSocket连接已打开！', res);
+//     wx.sendSocketMessage({
+//       data: JSON.stringify({
+//         "method": reqObj.method,
+//         "url": reqObj.reqUrl,
+//         "header": {
+//           "S-Request-Id": Date.now() + Math.random().toString(20).substr(2, 6),
+//           "Authentication": "Bearer " + token
+//         },
+//         "body": JSON.stringify(reqObj.body)
+//       })
+//     })
+//   });
+//   wx.onSocketError(function (res) {
+//     console.log(res, 'WebSocket连接打开失败，请检查！')
+//   });
+//   wx.onSocketMessage(function (res) {
+//     console.log('收到服务器内容：' + res.data)
+//   });
+//   wx.onSocketClose(function (res) {
+//     console.log('WebSocket 已关闭！')
+//   })
+// };
 var Ws = (function () {
   function Ws(wsUrl) {
     console.log(wsUrl);
