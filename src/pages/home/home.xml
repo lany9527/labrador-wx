@@ -1,1 +1,6 @@
-<view class="home">Home</view>
+<view class="home">
+    Home
+    <text class="link" catchtap="handleShowUI">
+        {{state.title}}
+    </text>
+</view>

@@ -3,7 +3,6 @@ import immutable from 'seamless-immutable';
 //import { connect } from 'labrador-redux';
 // import api from '../../utils/api'
 import Ws from '../../utils/resource'
-// const Ws = require('../../utils/resource');
 const {any} = PropTypes;
 
 class Home extends Component {
@@ -14,7 +13,9 @@ class Home extends Component {
   static defaultProps = {
     foo: 'bar'
   };
-
+  state = {
+    title: '',
+  };
   constructor(props) {
     super(props);
     this.state = immutable({});
@@ -25,28 +26,28 @@ class Home extends Component {
   }
 
   onLoad() {
-    let token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0ODY2MjI1OTcsImxldmVsIjoiIiwidWlkIjoiZTE3MmQ0NGUtZGY5Ni00NzBjLTlmM2QtMWJkN2RlNjU3MTA0In0.U3X_bEw1tpRKPDVUl3W2Ex9ohLVa4tUa8iDXIyVIJWgZXA1mfSHC6A_xkYtiywzIrPftvA2uwzE978ohbb6xIdezMmlcciiKRd-XZNQCBipyHTFsEo61ByA7zdhyB3g2jpImSKRpwQngKUdfnWYoRUKPxbw3cxWwkpacuoXNFhs"
+    let token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0ODY3MTAwMjIsImxldmVsIjoiIiwidWlkIjoiZTE3MmQ0NGUtZGY5Ni00NzBjLTlmM2QtMWJkN2RlNjU3MTA0In0.Dq5vp_eeVay25YaNNzLjRQsjqghRvfScvpntTT6wTQj1klZI3se3qErpXNn6isDg5PyWp6AENlZ3o-l-IeicTwd4BndMOCrUhHTz769F_--3cqDGxfMir4e9f1lfWWvI4RpD4GxLc38fFYaSwVx2xe5UzHkJbxMnsN21sdh6bvU";
+    let title = {};
 
     const ws = new Ws("ws://192.168.8.138/api/ws");
-    /*ws.get(
-      {
-        reqUrl: 'http://192.168.8.138/api/v1/user/auth/status',
-        method: "GET",
-        body: {
-          "username": "826781877142",
-          "password": "111111"
-        }
-      },
-      token
-    )*/
+    // ws.get(
+    //   {
+    //     url: 'http://192.168.8.138/api/v1/user/auth/status'
+    //   },
+    //   token
+    // );
+
     ws.post({
-      reqUrl: 'http://192.168.8.138/api/v1/user/auth/login',
-      method: "POST",
-      body: {
+      url: 'http://192.168.8.138/api/v1/user/auth/login',
+      data: {
         "username": "826781877142",
         "password": "111111"
       }
-    })
+    }).then(function (res) {
+      console.log(res);
+      title = res;
+    });
+    this.setState({ title: title.id });
   }
 
 }
