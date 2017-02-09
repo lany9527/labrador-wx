@@ -1,5 +1,5 @@
 <view class="home">
-    Home
+    当前用户信息
     <text class="link" catchtap="handleShowUI">
         {{state.title}}
     </text>

@@ -8,13 +8,18 @@ var Ws = (function () {
   }
 
   Ws.prototype.get = (reqObj, token) => {
-    console.log("get");
-    wx.onSocketOpen(function (res) {
-      console.log('WebSocket连接已打开！', res);
-      sendMsg(reqObj, token, "GET");
+    return new Promise((resolve, reject) => {
+      wx.onSocketOpen(function (res) {
+        console.log('WebSocket连接已打开！', res);
+        sendMsg(reqObj, token, "GET");
+      });
+      wx.onSocketMessage(function (res) {
+        resolve(JSON.parse(res.data));
+        // console.log(JSON.parse(res.data));
+      });
     });
+
     handleError();
-    handleMsg();
     closeWs();
   };
   Ws.prototype.post = (reqObj, token) => {
