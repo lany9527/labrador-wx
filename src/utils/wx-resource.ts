@@ -20,12 +20,9 @@ class WxResource {
    * @returns {WxResource}
    */
   public connect(): WxResource {
-    let _that = this;
-    setTimeout(function () {
-      wx.connectSocket({
-        url: _that.wsUrl
-      });
-    },200000);
+    wx.connectSocket({
+      url: this.wsUrl
+    });
 
     return this;
   }
@@ -62,9 +59,9 @@ class WxResource {
         console.log('WebSocket connection has been opened!', res);
         _that.sendMsg(reqObj, "POST");
       });
-      this.receiveMsg(resolve);
-
+      // this.receiveMsg(resolve);
       this.handleError(reject);
+      this.handleSocketClose(reject)
     })
   }
 
@@ -142,6 +139,9 @@ class WxResource {
         console.log("发送失败", res)
       }
     });
+    wx.onSocketMessage(function (res) {
+      console.log(res.data);
+    });
   }
 
   // 处理错误信息
@@ -158,11 +158,12 @@ class WxResource {
       resolve(JSON.parse(res.data));
     });
   }
-  handleSocketClose(){
+  handleSocketClose(reject){
+    let _that = this;
     wx.onSocketClose(function (res) {
       console.log("socketClose, try to connecting ...", res);
       setTimeout(function () {
-        this.connect();
+        _that.connect();
       },this.retryTime)
     })
   }

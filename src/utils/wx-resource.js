@@ -15,12 +15,9 @@ var WxResource = (function () {
      * @returns {WxResource}
      */
     WxResource.prototype.connect = function () {
-        var _that = this;
-        setTimeout(function () {
-            wx.connectSocket({
-                url: _that.wsUrl
-            });
-        }, 200000);
+        wx.connectSocket({
+            url: this.wsUrl
+        });
         return this;
     };
     /**
@@ -56,8 +53,9 @@ var WxResource = (function () {
                 console.log('WebSocket connection has been opened!', res);
                 _that.sendMsg(reqObj, "POST");
             });
-            _this.receiveMsg(resolve);
+            // this.receiveMsg(resolve);
             _this.handleError(reject);
+            _this.handleSocketClose(reject);
         });
     };
     /**
@@ -132,6 +130,9 @@ var WxResource = (function () {
                 console.log("发送失败", res);
             }
         });
+        wx.onSocketMessage(function (res) {
+            console.log(res.data);
+        });
     };
     // 处理错误信息
     WxResource.prototype.handleError = function (reject) {
@@ -146,11 +147,12 @@ var WxResource = (function () {
             resolve(JSON.parse(res.data));
         });
     };
-    WxResource.prototype.handleSocketClose = function () {
+    WxResource.prototype.handleSocketClose = function (reject) {
+        var _that = this;
         wx.onSocketClose(function (res) {
             console.log("socketClose, try to connecting ...", res);
             setTimeout(function () {
-                this.connect();
+                _that.connect();
             }, this.retryTime);
         });
     };
