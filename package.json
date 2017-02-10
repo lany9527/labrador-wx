@@ -43,6 +43,10 @@
     "redux-persist": "^4.3.0",
     "redux-saga": "^0.13.0",
     "regenerator-runtime": "^0.10.1",
-    "seamless-immutable": "^6.3.0"
+    "seamless-immutable": "^6.3.0",
+    "wx-resource": "^1.0.3"
+  },
+  "devDependencies": {
+    "eslint-plugin-jsx-a11y": "^4.0.0"
   }
 }
