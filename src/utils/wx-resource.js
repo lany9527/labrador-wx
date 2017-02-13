@@ -16,7 +16,16 @@ var WxResource = (function () {
      */
     WxResource.prototype.connect = function () {
         wx.connectSocket({
-            url: this.wsUrl
+            url: this.wsUrl,
+            success: function (res) {
+                console.log("connectSocket success ", res);
+            },
+            fail: function (res) {
+                console.log("connectSocket fail ", res);
+            },
+            complete: function (res) {
+                console.log("connectSocket complete ", res);
+            },
         });
         return this;
     };
@@ -36,7 +45,7 @@ var WxResource = (function () {
             });
             _this.receiveMsg(resolve);
             _this.handleError(reject);
-            _this.handleSocketClose();
+            _this.handleSocketClose(reject);
         });
     };
     /**
@@ -51,9 +60,8 @@ var WxResource = (function () {
         return new es6_promise_1.Promise(function (resolve, reject) {
             wx.onSocketOpen(function (res) {
                 console.log('WebSocket connection has been opened!', res);
-                _that.sendMsg(reqObj, "POST");
+                _that.sendMsg(reqObj, "POST", resolve);
             });
-            // this.receiveMsg(resolve);
             _this.handleError(reject);
             _this.handleSocketClose(reject);
         });
@@ -70,7 +78,7 @@ var WxResource = (function () {
         return new es6_promise_1.Promise(function (resolve, reject) {
             wx.onSocketOpen(function (res) {
                 console.log('WebSocket connection has been opened!', res);
-                _that.sendMsg(reqObj, "DELETE");
+                _that.sendMsg(reqObj, "DELETE", resolve);
             });
             _this.receiveMsg(resolve);
             _this.handleError(reject);
@@ -88,7 +96,7 @@ var WxResource = (function () {
         return new es6_promise_1.Promise(function (resolve, reject) {
             wx.onSocketOpen(function (res) {
                 console.log('WebSocket connection has been opened!', res);
-                _that.sendMsg(reqObj, "UPDATE");
+                _that.sendMsg(reqObj, "UPDATE", resolve);
             });
             _this.receiveMsg(resolve);
             _this.handleError(reject);
@@ -100,7 +108,7 @@ var WxResource = (function () {
      * @param method  请求方法 GET  POST ...
      * @param token
      */
-    WxResource.prototype.sendMsg = function (reqObj, method, token) {
+    WxResource.prototype.sendMsg = function (reqObj, method, resolve, token) {
         // 判断是否传入token
         var header = {};
         if (token === undefined) {
@@ -130,9 +138,7 @@ var WxResource = (function () {
                 console.log("发送失败", res);
             }
         });
-        wx.onSocketMessage(function (res) {
-            console.log(res.data);
-        });
+        this.receiveMsg(resolve);
     };
     // 处理错误信息
     WxResource.prototype.handleError = function (reject) {
@@ -144,6 +150,7 @@ var WxResource = (function () {
     // 处理服务器返回内容
     WxResource.prototype.receiveMsg = function (resolve) {
         wx.onSocketMessage(function (res) {
+            console.log("接收到服务器返回：", res);
             resolve(JSON.parse(res.data));
         });
     };

@@ -21,7 +21,16 @@ class WxResource {
    */
   public connect(): WxResource {
     wx.connectSocket({
-      url: this.wsUrl
+      url: this.wsUrl,
+      success: function (res) {
+        console.log("connectSocket success ", res);
+      },
+      fail: function (res) {
+        console.log("connectSocket fail ", res);
+      },
+      complete: function (res) {
+        console.log("connectSocket complete ", res);
+      },
     });
 
     return this;
@@ -42,7 +51,7 @@ class WxResource {
       });
       this.receiveMsg(resolve);
       this.handleError(reject);
-      this.handleSocketClose()
+      this.handleSocketClose(reject)
     })
   }
 
@@ -57,9 +66,8 @@ class WxResource {
     return new Promise((resolve, reject) => {
       wx.onSocketOpen(function (res) {
         console.log('WebSocket connection has been opened!', res);
-        _that.sendMsg(reqObj, "POST");
+        _that.sendMsg(reqObj, "POST", resolve);
       });
-      // this.receiveMsg(resolve);
       this.handleError(reject);
       this.handleSocketClose(reject)
     })
@@ -76,7 +84,7 @@ class WxResource {
     return new Promise((resolve, reject) => {
       wx.onSocketOpen(function (res) {
         console.log('WebSocket connection has been opened!', res);
-        _that.sendMsg(reqObj, "DELETE");
+        _that.sendMsg(reqObj, "DELETE", resolve);
       });
       this.receiveMsg(resolve);
 
@@ -95,7 +103,7 @@ class WxResource {
     return new Promise((resolve, reject) => {
       wx.onSocketOpen(function (res) {
         console.log('WebSocket connection has been opened!', res);
-        _that.sendMsg(reqObj, "UPDATE");
+        _that.sendMsg(reqObj, "UPDATE", resolve);
       });
       this.receiveMsg(resolve);
 
@@ -109,8 +117,7 @@ class WxResource {
    * @param method  请求方法 GET  POST ...
    * @param token
    */
-  private sendMsg(reqObj: ReqObj, method: string, token?: string) {
-
+  private sendMsg(reqObj: ReqObj, method: string, resolve, token?: string) {
     // 判断是否传入token
     let header = {};
     if (token === undefined) {
@@ -139,9 +146,7 @@ class WxResource {
         console.log("发送失败", res)
       }
     });
-    wx.onSocketMessage(function (res) {
-      console.log(res.data);
-    });
+    this.receiveMsg(resolve);
   }
 
   // 处理错误信息
@@ -155,16 +160,18 @@ class WxResource {
   // 处理服务器返回内容
   receiveMsg(resolve) {
     wx.onSocketMessage(function (res) {
+      console.log("接收到服务器返回：", res);
       resolve(JSON.parse(res.data));
     });
   }
-  handleSocketClose(reject){
+
+  handleSocketClose(reject) {
     let _that = this;
     wx.onSocketClose(function (res) {
       console.log("socketClose, try to connecting ...", res);
       setTimeout(function () {
         _that.connect();
-      },this.retryTime)
+      }, this.retryTime)
     })
   }
 
