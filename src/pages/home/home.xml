@@ -1,6 +1,6 @@
 <view class="home">
     当前用户ID:
-    <text class="link" catchtap="handleShowUI">
+    <text class="red" catchtap="handleShowUI">
         {{state.title.id}}
     </text>
     当前用户token:
@@ -10,5 +10,9 @@
     连接用时:
     <text class="link" catchtap="handleShowUI">
         {{state.title.time}}
+    </text>
+    error:
+    <text class="link" catchtap="handleShowUI">
+        {{state.title.error}}
     </text>
 </view>
