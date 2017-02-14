@@ -23,17 +23,18 @@ class WxResource {
     let _that = this;
 
     wx.onSocketOpen((event) => {
-      console.info('WebSocket已连接', event);
+      console.info('WebSocket已打开：', event);
       this.count++;
       this.socketState = event.target.readyState;
       this.socketOpen = true;
       // this.sendMsg(_that.reqObj,"GET");
       console.log("open的次数：", this.count);
+      return this.socketOpen;
     });
     wx.onSocketError((event) => {
       console.error('WebSocket连接打开失败，请检查！', event);
     });
-
+    // console.log("外部：", this.socketOpen);
     return this;
   }
 
@@ -55,7 +56,7 @@ class WxResource {
   //发送消息
   private sendMsg(reqObj, method?) {
     console.log("socketState: ", this.socketState); //undefined
-    if (this.socketOpen) {
+    if (!this.socketOpen) {
       console.log("webSocket opened");
       // 判断是否传入token
       let header = {};
@@ -102,13 +103,6 @@ class WxResource {
     })
   }
 
-  /*public post(url, data, token) {
-   let _that = this;
-   this.sendMsg(url: string, method:string, data?, token?:string);
-   return new Promise((resolve, reject) => {
-   _that.afterConnect(resolve, reject);
-   })
-   }*/
 }
 
 export default WxResource;

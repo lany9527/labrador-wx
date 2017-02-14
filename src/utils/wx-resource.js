@@ -17,16 +17,18 @@ var WxResource = (function () {
         var _this = this;
         var _that = this;
         wx.onSocketOpen(function (event) {
-            console.info('WebSocket已连接', event);
+            console.info('WebSocket已打开：', event);
             _this.count++;
             _this.socketState = event.target.readyState;
             _this.socketOpen = true;
             // this.sendMsg(_that.reqObj,"GET");
             console.log("open的次数：", _this.count);
+            return _this.socketOpen;
         });
         wx.onSocketError(function (event) {
             console.error('WebSocket连接打开失败，请检查！', event);
         });
+        // console.log("外部：", this.socketOpen);
         return this;
     };
     WxResource.prototype.connect = function () {
@@ -45,7 +47,7 @@ var WxResource = (function () {
     //发送消息
     WxResource.prototype.sendMsg = function (reqObj, method) {
         console.log("socketState: ", this.socketState); //undefined
-        if (this.socketOpen) {
+        if (!this.socketOpen) {
             console.log("webSocket opened");
             // 判断是否传入token
             var header = {};

@@ -34,6 +34,7 @@ class Home extends Component {
     const wxResource = new WxResource();
 
     // const wxResource = new WxResource("ws://192.168.8.138/api/ws");
+    // wxResource.connect();
     wxResource.get();
     // wxResource.post();
 
