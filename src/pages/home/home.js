@@ -29,28 +29,25 @@ class Home extends Component {
   }
 
   onLoad() {
-    let token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0ODY3OTY1MzIsImxldmVsIjoiIiwidWlkIjoiZTE3MmQ0NGUtZGY5Ni00NzBjLTlmM2QtMWJkN2RlNjU3MTA0In0.bQNfYVBZWaLSzMPo9z_aIRfrMuu_D_1LWFDql1cIYDXZ6Y7q_rbNUwaYoOiR4-Gkx9rJM_hAjl3s3LB8tvzeHH8vzDIfPdf0yo1_Iv7KhBI8P7Kgkya6FzefqKpwf1bsyj83Gf1M_J7AGGmuZ3ssFPQJzt77oKRI70MjQGINA6c";
+    let token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0ODcxMjg0MjcsImxldmVsIjoiIiwidWlkIjoiZTE3MmQ0NGUtZGY5Ni00NzBjLTlmM2QtMWJkN2RlNjU3MTA0In0.BG2w-Lo02i2xaga4iZkM7RmP8hXgpRKAC-0MTp5hFj_ugnwATt2m9nDjtmJfRpWnAlpfmXZLgEQTlMHwG2H9hhoqojJC6piCh76UkH0mNwjJrBGiTINurholwTF2VYQPysB4bz7G4jepzEccNdD_NW-_Rxw-Bo5WDcH37OZ2zTw";
     let _that = this;
     const wxResource = new WxResource();
-    // wxResource.post().then((res)=>{
+
+    // const wxResource = new WxResource("ws://192.168.8.138/api/ws");
+    wxResource.get();
+    // wxResource.post();
+
+    // wxResource.post(
+    //   'http://192.168.8.138/api/v1/user/auth/login',
+    //   {
+    //     "username": "826781877142",
+    //     "password": "111111"
+    //   }).then(function (res) {
+    //   // console.log(res);
     //   let t = res;
     //   console.log("Promise:", t);
     //   _that.setState({title: t});
     // });
-    // const wxResource = new WxResource("ws://192.168.8.138/api/ws");
-    // wxResource.get('http://192.168.8.138/api/v1/user/auth/status');
-
-    wxResource.post(
-      'http://192.168.8.138/api/v1/user/auth/login',
-      {
-        "username": "826781877142",
-        "password": "111111"
-      }).then(function (res) {
-      // console.log(res);
-      let t = res;
-      console.log("Promise:", t);
-      _that.setState({title: t});
-    });
   }
 
 }

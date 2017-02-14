@@ -5,22 +5,27 @@
 var es6_promise_1 = require('es6-promise');
 var WxResource = (function () {
     function WxResource() {
-        this.url = 'http://192.168.8.138/api/v1/user/auth/login';
+        this.socketOpen = false;
+        this.count = 0;
         this.reqObj = {
-            "username": "826781877142",
-            "password": "111111"
+            url: 'http://192.168.8.138/api/v1/user/auth/status',
+            token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0ODcxMjg0MjcsImxldmVsIjoiIiwidWlkIjoiZTE3MmQ0NGUtZGY5Ni00NzBjLTlmM2QtMWJkN2RlNjU3MTA0In0.BG2w-Lo02i2xaga4iZkM7RmP8hXgpRKAC-0MTp5hFj_ugnwATt2m9nDjtmJfRpWnAlpfmXZLgEQTlMHwG2H9hhoqojJC6piCh76UkH0mNwjJrBGiTINurholwTF2VYQPysB4bz7G4jepzEccNdD_NW-_Rxw-Bo5WDcH37OZ2zTw"
         };
-        this.method = "POST";
-        this.connect().listen().afterConnect();
+        this.listen().connect().afterConnect();
     }
     WxResource.prototype.listen = function () {
+        var _this = this;
         var _that = this;
-        wx.onSocketOpen(function () {
-            console.info('WebSocket已连接');
-            _that.sendMsg(_that.url, _that.method, _that.reqObj);
+        wx.onSocketOpen(function (event) {
+            console.info('WebSocket已连接', event);
+            _this.count++;
+            _this.socketState = event.target.readyState;
+            _this.socketOpen = true;
+            // this.sendMsg(_that.reqObj,"GET");
+            console.log("open的次数：", _this.count);
         });
-        wx.onSocketError(function () {
-            console.error('WebSocket连接打开失败，请检查！');
+        wx.onSocketError(function (event) {
+            console.error('WebSocket连接打开失败，请检查！', event);
         });
         return this;
     };
@@ -31,38 +36,57 @@ var WxResource = (function () {
         return this;
     };
     WxResource.prototype.afterConnect = function (resolve, reject) {
-        // wx.onSocketClose(function () {
-        //
-        // });
         wx.onSocketMessage(function (res) {
             console.log("服务器返回：", JSON.parse(res.data));
             resolve(JSON.parse(res.data));
         });
         return this;
     };
-    WxResource.prototype.sendMsg = function (url, method, obj) {
-        console.log(method);
-        wx.sendSocketMessage({
-            data: JSON.stringify({
-                "method": method,
-                "url": url,
-                "header": { "S-Request-Id": Date.now() + Math.random().toString(20).substr(2, 6), },
-                "body": JSON.stringify(obj)
-            }),
-            success: function (res) {
-                console.log("发送成功", res);
-            },
-            fail: function (res) {
-                console.log("发送失败", res);
+    //发送消息
+    WxResource.prototype.sendMsg = function (reqObj, method) {
+        console.log("socketState: ", this.socketState); //undefined
+        if (this.socketOpen) {
+            console.log("webSocket opened");
+            // 判断是否传入token
+            var header = {};
+            if (reqObj.token === undefined) {
+                console.log("no token");
+                header = {
+                    "S-Request-Id": Date.now() + Math.random().toString(20).substr(2, 6)
+                };
             }
-        });
+            else if (reqObj.token !== undefined) {
+                console.log("get token");
+                header = {
+                    "S-Request-Id": Date.now() + Math.random().toString(20).substr(2, 6),
+                    "Authentication": "Bearer " + reqObj.token
+                };
+            }
+            wx.sendSocketMessage({
+                data: JSON.stringify({
+                    "method": method,
+                    "url": reqObj.url,
+                    "header": header,
+                    "body": JSON.stringify(reqObj.data)
+                }),
+                success: function (res) {
+                    console.log("发送成功", res);
+                },
+                fail: function (res) {
+                    console.log("发送失败", res);
+                }
+            });
+        }
+        else {
+            console.log("socket not open", this.socketOpen);
+        }
     };
-    WxResource.prototype.post = function (url, method, obj) {
-        var _this = this;
+    WxResource.prototype.get = function () {
         var _that = this;
+        console.log("socketOpen", this.socketOpen);
+        this.sendMsg(this.reqObj, "GET");
         return new es6_promise_1.Promise(function (resolve, reject) {
-            // _that.sendMsg(url, "POST", obj);
-            _this.afterConnect(resolve, reject);
+            _that.afterConnect(resolve, reject);
         });
     };
     return WxResource;
