@@ -8,7 +8,7 @@ declare const wx: any;
 class WxResource {
   public socketOpen: boolean = false;
   public count: number = 0;
-  public socketState;
+  public socketState: boolean = false;
 
   public reqObj: any = {
     url: 'http://192.168.8.138/api/v1/user/auth/status',
@@ -29,7 +29,8 @@ class WxResource {
       this.socketOpen = true;
       // this.sendMsg(_that.reqObj,"GET");
       console.log("open的次数：", this.count);
-      return this.socketOpen;
+
+      // return this.socketOpen;
     });
     wx.onSocketError((event) => {
       console.error('WebSocket连接打开失败，请检查！', event);
@@ -40,15 +41,15 @@ class WxResource {
 
   private connect(): WxResource {
     wx.connectSocket({
-      url: "ws://192.168.8.138/api/ws"
+      url: "wss://localhost:8080/"
     });
     return this;
   }
 
   private afterConnect(resolve?, reject?): WxResource {
     wx.onSocketMessage((res) => {
-      console.log("服务器返回：", JSON.parse(res.data));
-      resolve(JSON.parse(res.data));
+      console.log("服务器返回：", res);
+      // resolve(JSON.parse(res));
     });
     return this;
   }

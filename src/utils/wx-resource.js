@@ -7,6 +7,7 @@ var WxResource = (function () {
     function WxResource() {
         this.socketOpen = false;
         this.count = 0;
+        this.socketState = false;
         this.reqObj = {
             url: 'http://192.168.8.138/api/v1/user/auth/status',
             token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0ODcxMjg0MjcsImxldmVsIjoiIiwidWlkIjoiZTE3MmQ0NGUtZGY5Ni00NzBjLTlmM2QtMWJkN2RlNjU3MTA0In0.BG2w-Lo02i2xaga4iZkM7RmP8hXgpRKAC-0MTp5hFj_ugnwATt2m9nDjtmJfRpWnAlpfmXZLgEQTlMHwG2H9hhoqojJC6piCh76UkH0mNwjJrBGiTINurholwTF2VYQPysB4bz7G4jepzEccNdD_NW-_Rxw-Bo5WDcH37OZ2zTw"
@@ -23,7 +24,7 @@ var WxResource = (function () {
             _this.socketOpen = true;
             // this.sendMsg(_that.reqObj,"GET");
             console.log("open的次数：", _this.count);
-            return _this.socketOpen;
+            // return this.socketOpen;
         });
         wx.onSocketError(function (event) {
             console.error('WebSocket连接打开失败，请检查！', event);
@@ -33,14 +34,14 @@ var WxResource = (function () {
     };
     WxResource.prototype.connect = function () {
         wx.connectSocket({
-            url: "ws://192.168.8.138/api/ws"
+            url: "wss://localhost:8080/"
         });
         return this;
     };
     WxResource.prototype.afterConnect = function (resolve, reject) {
         wx.onSocketMessage(function (res) {
-            console.log("服务器返回：", JSON.parse(res.data));
-            resolve(JSON.parse(res.data));
+            console.log("服务器返回：", res);
+            // resolve(JSON.parse(res));
         });
         return this;
     };
