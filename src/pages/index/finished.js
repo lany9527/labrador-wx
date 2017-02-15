@@ -1,10 +1,10 @@
-import { Component, PropTypes } from 'labrador-immutable';
-import { bindActionCreators } from 'redux';
-import { connect } from 'labrador-redux';
+import {Component, PropTypes} from 'labrador-immutable';
+import {bindActionCreators} from 'redux';
+import {connect} from 'labrador-redux';
 import Todo from '../../components/todo/todo';
 import * as todoActions from '../../redux/todos';
 
-const { array, func } = PropTypes;
+const {array, func} = PropTypes;
 
 class Finished extends Component {
   static propTypes = {
@@ -13,42 +13,50 @@ class Finished extends Component {
     restoreTodo: func
   };
 
-  static defaultProps = {
-    todos: []
-  };
-
-  children() {
-    let todos = this.props.todos;
-    let finished = [];
-    if (todos.length) {
-      finished = todos.asMutable()
-        .filter((todo) => todo.finished)
-        .sort((a, b) => (a.finishedAt < b.finishedAt ? 1 : -1));
-    }
-    return {
-      todos: finished.map((todo) => ({
-        component: Todo,
-        key: todo.id,
-        props: {
-          ...todo,
-          onRemove: this.handleRemove,
-          onRestore: this.handleRestore
-        }
-      }))
-    };
+  onLoad(options) {
+    let _that = this;
+    console.log("将要连接服务器。");
+    wx.connectSocket({
+      url: 'ws://192.168.8.138/api/ws'
+    });
+    wx.onSocketOpen(function (res) {
+      console.log("连接服务器成功。");
+      _that.setState({
+        socketOpen: true
+      });
+    });
+    wx.onSocketMessage(function (res) {
+      console.log('收到服务器内容：' + res.data);
+    });
   }
 
-  handleRemove = (id) => {
-    this.props.removeTodo(id);
-  };
+  onUnload() {
+    wx.closeSocket();
+  }
 
-  handleRestore = (id) => {
-    this.props.restoreTodo(id);
-  };
+  sendSocketMessage() {
+    if (this.state.socketOpen) {
+      console.log("可以发送数据");
+      wx.sendSocketMessage({
+        data: JSON.stringify({
+          "method": "POST",
+          "url": 'http://192.168.8.138/api/v1/user/auth/login',
+          "header": {
+            "S-Request-Id": Date.now() + Math.random().toString(20).substr(2, 6),
+          },
+          "body": JSON.stringify({
+            "username": '826781877142',
+            "password": '111111'
+          })
+        })
+      })
+    }
+  }
+
 }
 
 export default connect(
-  ({ todos }) => ({ todos }),
+  ({todos}) => ({todos}),
   (dispatch) => bindActionCreators({
     removeTodo: todoActions.remove,
     restoreTodo: todoActions.restore,
